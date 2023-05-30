@@ -28,14 +28,14 @@ class ThreadListViewModel(
         when (event) {
             is ThreadListEvent.CreateThread -> {
                 viewModelScope.launch {
-                    threadOperations.createThreadUseCase()
+                    //threadOperations.createThreadUseCase()
                 }
                 loadThreadList()
 
             }
             is ThreadListEvent.DeleteThread -> {
                 viewModelScope.launch {
-                    threadOperations.deleteThreadUseCase()
+                    //threadOperations.deleteThreadUseCase()
                 }
                 loadThreadList()
             }

@@ -68,8 +68,6 @@ fun LoginScreen(tokenClient: TokenClient, onLogin: (accessToken: String) -> Unit
                 .appendQueryParameter("scope", "openid offline_access")
                 .build()
 
-            Log.d("anyád", loginUrl.toString())
-
             loadUrl(loginUrl.toString())
         }
     })

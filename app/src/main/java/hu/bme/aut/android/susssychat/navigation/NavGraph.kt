@@ -34,23 +34,12 @@ fun NavGraph(
             })
         }
         composable(Screen.ThreadList.route) {
-            ThreadListScreen()
-        }
-        composable(
-            route = Screen.CheckTodo.route,
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.IntType
-                }
-            )
-        ) {
-            CheckTodoScreen(
-                onNavigateBack = {
-                    navController.popBackStack(
-                        route = Screen.Todos.route,
-                        inclusive = true
-                    )
-                    navController.navigate(Screen.Todos.route)
+            ThreadListScreen(
+                onListItemClick = {
+                    navController.navigate(Screen.Thread.passId(it))
+                },
+                onFabClick = {
+                    navController.navigate(Screen.CreateThread.route)
                 }
             )
         }

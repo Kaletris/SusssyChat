@@ -1,3 +1,4 @@
+/*
 package hu.bme.aut.android.susssychat.feature.thread_create
 
 import androidx.lifecycle.ViewModel
@@ -78,4 +79,4 @@ class CreateThreadViewModel (
         }
 
 
-    }
+    }*/
