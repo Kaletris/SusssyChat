@@ -70,7 +70,7 @@ class ThreadListViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val threadOperations = ThreadListUseCases(TodoApplication.repository)
+                val threadOperations = ThreadUseCases()
                 ThreadListViewModel(
                     threadOperations = threadOperations
                 )

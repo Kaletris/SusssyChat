@@ -12,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hu.bme.aut.android.susssychat.clients.TokenClient
+import hu.bme.aut.android.susssychat.feature.thread_list.ThreadListScreen
 import hu.bme.aut.android.susssychat.login.LoginScreen
-import hu.bme.aut.android.susssychat.thread_list.ThreadsScreen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -34,8 +34,7 @@ fun NavGraph(
             })
         }
         composable(Screen.ThreadList.route) {
-            ThreadListScreen(
-            })
+            ThreadListScreen()
         }
         composable(
             route = Screen.CheckTodo.route,

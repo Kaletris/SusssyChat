@@ -29,7 +29,7 @@ import hu.bme.aut.android.susssychat.ui.model.toUiText
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun TodosScreen(
+fun ThreadListScreen(
     onListItemClick: (Int) -> Unit,
     onFabClick: () -> Unit,
     viewModel: ThreadListViewModel = viewModel(factory = ThreadListViewModel.Factory),
