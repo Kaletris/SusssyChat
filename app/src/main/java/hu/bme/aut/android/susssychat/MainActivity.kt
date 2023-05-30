@@ -17,7 +17,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.compose.rememberNavController
 import hu.bme.aut.android.susssychat.clients.TokenClient
+import hu.bme.aut.android.susssychat.navigation.NavGraph
 import hu.bme.aut.android.susssychat.ui.theme.SusssyChatTheme
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -51,7 +53,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Login(tokenClient)
+                    val navController = rememberNavController()
+
+                    NavGraph(navController = navController, tokenClient = tokenClient)
                 }
             }
         }
@@ -82,59 +86,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Login(tokenClient: TokenClient) {
-    AndroidView(factory = {
-        WebView(it).apply {
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            webViewClient = object : WebViewClient () {
-                override fun onReceivedSslError(
-                    view: WebView?,
-                    handler: SslErrorHandler?,
-                    error: SslError?
-                ) {
-                    handler?.proceed()
-                }
-
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): Boolean {
-                    request?.let { req ->
-                        if (req.url.toString().startsWith("https://localhost:5002/signin-oidc")) {
-                            val authCode = request.url.getQueryParameter("code")!!
-
-                            GlobalScope.launch {
-                                val response = tokenClient.getToken(
-                                    "client",
-                                    "authorization_code",
-                                    authCode,
-                                    "https://localhost:5002/signin-oidc"
-                                )
-
-                                Log.d("alma", response.accessToken)
-                            }
-                        }
-                    }
-
-                    return super.shouldOverrideUrlLoading(view, request)
-                }
-            }
-
-            val loginUrl = Uri.parse("https://10.0.2.2:7069/connect/authorize")
-                .buildUpon()
-                .appendQueryParameter("client_id", "client")
-                .appendQueryParameter("redirect_uri", "https://localhost:5002/signin-oidc")
-                .appendQueryParameter("response_type", "code")
-                .appendQueryParameter("scope", "openid offline_access")
-                .build()
-
-            Log.d("anyád", loginUrl.toString())
-
-            loadUrl(loginUrl.toString())
-        }
-    })
-}

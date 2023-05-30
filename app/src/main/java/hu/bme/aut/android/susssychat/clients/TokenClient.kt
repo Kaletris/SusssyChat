@@ -3,6 +3,7 @@ package hu.bme.aut.android.susssychat.clients
 import hu.bme.aut.android.susssychat.data.TokenResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface TokenClient {
