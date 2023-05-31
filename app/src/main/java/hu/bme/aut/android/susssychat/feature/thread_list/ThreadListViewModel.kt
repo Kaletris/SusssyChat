@@ -1,20 +1,21 @@
 package hu.bme.aut.android.susssychat.feature.thread_list
 
+import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import hu.bme.aut.android.susssychat.ChatApplication
+import hu.bme.aut.android.susssychat.clients.ThreadsClient
 import hu.bme.aut.android.susssychat.usecases.ThreadUseCases
 
 class ThreadListViewModel(
-    private val threadOperations: ThreadUseCases
+    private val threadOperations: ThreadUseCases,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ThreadListState())
@@ -44,11 +45,12 @@ class ThreadListViewModel(
     }
 
     private fun loadThreadList() {
+        val accessToken = checkNotNull<String>(savedStateHandle["accessToken"])
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
                 CoroutineScope(coroutineContext).launch(Dispatchers.IO) {
-                    val threadList = threadOperations.loadThreadListUseCase().getOrThrow().map { it.asTodoUi() }
+                    val threadList = threadOperations.loadThreadListUseCase(accessToken).getOrThrow()
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -69,12 +71,15 @@ class ThreadListViewModel(
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val threadOperations = ThreadUseCases()
-                ThreadListViewModel(
-                    threadOperations = threadOperations
-                )
+                initializer {
+                    val savedStateHandle = createSavedStateHandle()
+                    val threadOperations = ThreadUseCases(ChatApplication.threadsClient)
+                    ThreadListViewModel(
+                        threadOperations = threadOperations,
+                        savedStateHandle = savedStateHandle,
+                    )
+                }
             }
         }
-    }
+
 }

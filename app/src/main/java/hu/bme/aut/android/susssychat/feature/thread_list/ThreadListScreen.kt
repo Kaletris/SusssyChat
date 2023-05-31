@@ -30,6 +30,7 @@ import hu.bme.aut.android.susssychat.ui.model.toUiText
 @ExperimentalMaterial3Api
 @Composable
 fun ThreadListScreen(
+    accessToken: String,
     onListItemClick: (Int) -> Unit,
     onFabClick: () -> Unit,
     viewModel: ThreadListViewModel = viewModel(factory = ThreadListViewModel.Factory),

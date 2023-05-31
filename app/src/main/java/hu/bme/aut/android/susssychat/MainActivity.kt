@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.rememberNavController
+import hu.bme.aut.android.susssychat.clients.ThreadsClient
 import hu.bme.aut.android.susssychat.clients.TokenClient
 import hu.bme.aut.android.susssychat.navigation.NavGraph
 import hu.bme.aut.android.susssychat.ui.theme.SusssyChatTheme
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
@@ -38,14 +40,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://10.0.2.2:7069")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(createTrustingOkHttpClient())
-            .build()
-
-        val tokenClient = retrofit.create(TokenClient::class.java)
-
         setContent {
             SusssyChatTheme {
                 // A surface container using the 'background' color from the theme
@@ -55,33 +49,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    NavGraph(navController = navController, tokenClient = tokenClient)
+                    NavGraph(navController = navController)
                 }
             }
-        }
-    }
-
-    private fun createTrustingOkHttpClient(): OkHttpClient {
-        return try {
-            val x509TrustManager: X509TrustManager = object : X509TrustManager {
-                override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {}
-                override fun checkServerTrusted(chain: Array<X509Certificate?>?, authType: String?) {}
-                override fun getAcceptedIssuers() = arrayOf<X509Certificate?>()
-            }
-
-            val trustAllCerts: Array<TrustManager> = arrayOf(
-                x509TrustManager
-            )
-
-            val sslContext: SSLContext = SSLContext.getInstance("SSL")
-            sslContext.init(null, trustAllCerts, SecureRandom())
-            OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager)
-                .hostnameVerifier { hostname: String?, session: SSLSession? -> true }
-                .build()
-
-        } catch (e: Exception) {
-            throw RuntimeException(e)
         }
     }
 }

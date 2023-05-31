@@ -12,14 +12,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView
+import hu.bme.aut.android.susssychat.ChatApplication
 import hu.bme.aut.android.susssychat.clients.TokenClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun LoginScreen(tokenClient: TokenClient, onLogin: (accessToken: String) -> Unit) {
+fun LoginScreen(onLogin: (accessToken: String) -> Unit) {
     AndroidView(factory = {
         WebView(it).apply {
             ViewGroup.LayoutParams(
@@ -44,14 +46,16 @@ fun LoginScreen(tokenClient: TokenClient, onLogin: (accessToken: String) -> Unit
                             val authCode = request.url.getQueryParameter("code")!!
 
                             GlobalScope.launch {
-                                val response = tokenClient.getToken(
+                                val response = ChatApplication.tokenClient.getToken(
                                     "client",
                                     "authorization_code",
                                     authCode,
                                     "https://localhost:5002/signin-oidc"
                                 )
 
-                                onLogin(response.accessToken)
+                                launch(Dispatchers.Main) {
+                                    onLogin(response.accessToken)
+                                }
                             }
                         }
                     }

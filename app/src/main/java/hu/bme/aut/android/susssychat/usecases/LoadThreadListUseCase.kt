@@ -1,13 +1,14 @@
 package hu.bme.aut.android.susssychat.usecases
 
+import hu.bme.aut.android.susssychat.clients.ThreadsClient
+import hu.bme.aut.android.susssychat.data.ThreadResponse
 import java.io.IOException
 
-class LoadThreadListUseCase (private val repository: TodoRepository) {
-
-        suspend operator fun invoke(): Result<List<Todo>> {
+class LoadThreadListUseCase(private val client: ThreadsClient) {
+        suspend operator fun invoke(accessToken: String): Result<List<ThreadResponse>> {
             return try {
-                val todos = repository.getAllTodos().first()
-                Result.success(todos.map { it.asTodo() })
+                val threads = client.getThreads("Bearer $accessToken")
+                Result.success(threads)
             } catch (e: IOException) {
                 Result.failure(e)
             }

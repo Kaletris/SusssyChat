@@ -19,28 +19,29 @@ import hu.bme.aut.android.susssychat.login.LoginScreen
 @Composable
 fun NavGraph(
     navController: NavHostController = rememberNavController(),
-    tokenClient: TokenClient,
-
-    ) {
-    var accessToken by rememberSaveable { mutableStateOf("") }
-
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            LoginScreen(tokenClient, onLogin = {
-                accessToken = it
+            LoginScreen(onLogin = {
+                navController.navigate(Screen.ThreadList.passToken(it))
             })
         }
-        composable(Screen.ThreadList.route) {
+        composable(Screen.ThreadList.route, arguments = listOf(
+            navArgument("accessToken") {
+                type = NavType.StringType
+            }
+        )) {
             ThreadListScreen(
                 onListItemClick = {
-                    navController.navigate(Screen.Thread.passId(it))
+                    //navController.navigate(Screen.Thread.passValues(accessToken, it))
                 },
                 onFabClick = {
                     navController.navigate(Screen.CreateThread.route)
-                }
+                },
+                accessToken = ""
             )
         }
     }
