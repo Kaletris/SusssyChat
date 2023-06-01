@@ -25,23 +25,26 @@ fun NavGraph(
         startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            LoginScreen(onLogin = {
-                navController.navigate(Screen.ThreadList.passToken(it))
-            })
+            LoginScreen(
+                onLogin = {
+                    navController.navigate(Screen.ThreadList.passToken(it))
+                }
+            )
         }
-        composable(Screen.ThreadList.route, arguments = listOf(
-            navArgument("accessToken") {
-                type = NavType.StringType
-            }
-        )) {
+        composable(
+            Screen.ThreadList.route,
+            arguments = listOf(navArgument("accessToken") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
             ThreadListScreen(
-                onListItemClick = {
-                    //navController.navigate(Screen.Thread.passValues(accessToken, it))
+                onListItemClick = { token, id ->
+                    navController.navigate(Screen.Thread.passValues(token, id))
                 },
-                onFabClick = {
-                    navController.navigate(Screen.CreateThread.route)
+                onFabClick = { token ->
+                    navController.navigate(Screen.CreateThread.passToken(token))
                 },
-                accessToken = ""
             )
         }
     }

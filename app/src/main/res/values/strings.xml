@@ -4,4 +4,7 @@
     <string name="some_error_message">error</string>
     <string name="text_empty_thread_list">empty thread list</string>
     <string name="text_thread_list">Thread list</string>
+    <string name="app_bar_title_thread_messages_list">List of messages</string>
+    <string name="text_empty_thread_message_list">Message list is empty</string>
+    <string name="text_thread_message_list">Message list</string>
 </resources>

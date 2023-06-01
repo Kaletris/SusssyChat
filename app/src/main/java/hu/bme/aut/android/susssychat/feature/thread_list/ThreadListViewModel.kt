@@ -10,11 +10,10 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import hu.bme.aut.android.susssychat.ChatApplication
-import hu.bme.aut.android.susssychat.clients.ThreadsClient
-import hu.bme.aut.android.susssychat.usecases.ThreadUseCases
+import hu.bme.aut.android.susssychat.usecases.ChatUseCases
 
 class ThreadListViewModel(
-    private val threadOperations: ThreadUseCases,
+    private val threadOperations: ChatUseCases,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -23,6 +22,10 @@ class ThreadListViewModel(
 
     init {
         loadThreadList()
+    }
+
+    fun getToken(): String {
+        return checkNotNull<String>(savedStateHandle["accessToken"])
     }
 
     fun onEvent(event: ThreadListEvent) {
@@ -45,7 +48,7 @@ class ThreadListViewModel(
     }
 
     private fun loadThreadList() {
-        val accessToken = checkNotNull<String>(savedStateHandle["accessToken"])
+        val accessToken = getToken()
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
@@ -71,15 +74,14 @@ class ThreadListViewModel(
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-                initializer {
-                    val savedStateHandle = createSavedStateHandle()
-                    val threadOperations = ThreadUseCases(ChatApplication.threadsClient)
-                    ThreadListViewModel(
-                        threadOperations = threadOperations,
-                        savedStateHandle = savedStateHandle,
-                    )
-                }
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                val threadOperations = ChatUseCases(ChatApplication.threadsClient)
+                ThreadListViewModel(
+                    threadOperations = threadOperations,
+                    savedStateHandle = savedStateHandle,
+                )
             }
         }
-
+    }
 }
