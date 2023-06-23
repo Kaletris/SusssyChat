@@ -73,7 +73,7 @@ fun MessageListScreen (
                         MaterialTheme.colorScheme.background
                     }
                 ),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
@@ -100,7 +100,7 @@ fun MessageListScreen (
                             ListItem(
                                 headlineText = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = state.messageList[i].Text)
+                                        Text(text = state.messageList[i].text)
                                         Icon(
                                             imageVector = Icons.Default.Circle,
                                             contentDescription = null,

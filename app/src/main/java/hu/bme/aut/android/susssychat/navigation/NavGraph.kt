@@ -13,7 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hu.bme.aut.android.susssychat.clients.TokenClient
 import hu.bme.aut.android.susssychat.feature.thread_list.ThreadListScreen
-import hu.bme.aut.android.susssychat.login.LoginScreen
+import hu.bme.aut.android.susssychat.feature.login.LoginScreen
+import hu.bme.aut.android.susssychat.feature.thread.message_list.MessageListScreen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -42,8 +43,21 @@ fun NavGraph(
                 onListItemClick = { token, id ->
                     navController.navigate(Screen.Thread.passValues(token, id))
                 },
+            )
+        }
+        composable(
+            Screen.Thread.route,
+            arguments = listOf(navArgument("accessToken") {
+                type = NavType.StringType
+            }
+            )
+        ) {
+            MessageListScreen(
+                onListItemClick = { token, id ->
+                    //navController.navigate(Screen.Thread.passValues(token, id))
+                },
                 onFabClick = { token ->
-                    navController.navigate(Screen.CreateThread.passToken(token))
+                    //navController.navigate(Screen.CreateThread.passToken(token))
                 },
             )
         }

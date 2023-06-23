@@ -32,7 +32,7 @@ class ThreadListViewModel(
         when (event) {
             is ThreadListEvent.CreateThread -> {
                 viewModelScope.launch {
-                    //threadOperations.createThreadUseCase()
+                    //threadOperations.createThreadUseCase(event.name)
                 }
                 loadThreadList()
 

@@ -1,9 +1,10 @@
 package hu.bme.aut.android.susssychat.usecases
 
 import hu.bme.aut.android.susssychat.clients.ThreadsClient
+import org.w3c.dom.Text
 
 class ChatUseCases(client: ThreadsClient) {
-    val createThreadUseCase = CreateThreadUseCase()
+    //val createThreadUseCase = CreateThreadUseCase()
     val deleteMessageUseCase = DeleteMessageUseCase()
     val deleteThreadUseCase = DeleteMessageUseCase()
     val editMessageUseCase = EditMessageUseCase()

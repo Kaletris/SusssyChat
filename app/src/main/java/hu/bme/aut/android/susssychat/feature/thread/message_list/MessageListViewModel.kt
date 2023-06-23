@@ -1,8 +1,10 @@
 package hu.bme.aut.android.susssychat.feature.thread.message_list
 
+import androidx.compose.ui.input.key.Key.Companion.J
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.auth0.android.jwt.JWT
 import hu.bme.aut.android.susssychat.ChatApplication
 import hu.bme.aut.android.susssychat.usecases.ChatUseCases
 import kotlinx.coroutines.CoroutineScope
@@ -28,8 +30,16 @@ class MessageListViewModel (
             return checkNotNull<String>(savedStateHandle["accessToken"])
         }
 
+        fun getSubId(): String {
+            val token = getToken()
+            val jwt = JWT(token)
+
+             return jwt.subject!!
+        }
+
         fun getThreadId(): Int {
-            return checkNotNull<Int>(savedStateHandle["id"])
+            val idAsString = checkNotNull<String>(savedStateHandle["id"])
+            return idAsString.toInt()
         }
 
         fun onEvent(event: MessageListEvent) {

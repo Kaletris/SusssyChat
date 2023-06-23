@@ -1,4 +1,4 @@
-package hu.bme.aut.android.susssychat.login
+package hu.bme.aut.android.susssychat.feature.login
 
 import android.net.Uri
 import android.net.http.SslError

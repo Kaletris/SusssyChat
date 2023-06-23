@@ -4,6 +4,6 @@ import android.content.Context
 import hu.bme.aut.android.susssychat.navigation.Screen
 
 sealed class ThreadListEvent {
-    object CreateThread : ThreadListEvent()
+    data class CreateThread(val name: String) : ThreadListEvent()
     object DeleteThread : ThreadListEvent()
 }

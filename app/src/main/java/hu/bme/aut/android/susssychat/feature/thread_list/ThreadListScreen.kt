@@ -6,61 +6,50 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import hu.bme.aut.android.susssychat.ChatApplication
 import hu.bme.aut.android.susssychat.R
+import hu.bme.aut.android.susssychat.feature.thread_list.ThreadListEvent.CreateThread
 import hu.bme.aut.android.susssychat.ui.common.ThreadListAppBar
 import hu.bme.aut.android.susssychat.ui.model.toUiText
+import hu.bme.aut.android.susssychat.usecases.ChatUseCases
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun ThreadListScreen(
     onListItemClick: (String, Int) -> Unit,
-    onFabClick: (String) -> Unit,
-    viewModel: ThreadListViewModel = viewModel(factory = ThreadListViewModel.Factory),
+    viewModel: ThreadListViewModel = viewModel(factory = ThreadListViewModel.Factory)
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
-            LargeFloatingActionButton(
-                onClick = { onFabClick(viewModel.getToken()) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-            }
-        },
         topBar = {
             ThreadListAppBar(
                 title = stringResource(id = R.string.app_bar_title_thread_list),
                 actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.onEvent(ThreadListEvent.CreateThread)
-                        }
-                    ) {
-                        Icon(imageVector = Icons.Default.Create, contentDescription = null)
-                    }
                 }
             )
         },
@@ -113,17 +102,9 @@ fun ThreadListScreen(
                                         )
                                     }
                                 },
-/*                                modifier = Modifier.combinedClickable(
-                                    onClick = { onListItemClick(state.ThreadList[i].id) },
-                                    onLongClick = {
-                                        viewModel.onEvent(
-                                            TodosEvent.ShareTodo(
-                                                context,
-                                                state.todos[i].id
-                                            )
-                                        )
-                                    }
-                                ),*/
+                                modifier = Modifier.combinedClickable(
+                                    onClick = { onListItemClick(viewModel.getToken(), state.threadList[i].id) },
+                                ),
                             )
                             if (i != state.threadList.lastIndex) {
                                 Divider(
@@ -134,6 +115,28 @@ fun ThreadListScreen(
                         }
                     }
                 }
+            }
+        }
+        Box(modifier = Modifier.fillMaxSize()) {
+            var messageText by remember { mutableStateOf("") }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                TextField(
+                    value = messageText,
+                    onValueChange = { messageText = it },
+                    label = { Text("New thread") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            CreateThread(messageText)
+                            keyboardController?.hide()
+                        })
+                )
             }
         }
     }
