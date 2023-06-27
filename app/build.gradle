@@ -96,4 +96,6 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
     implementation 'com.auth0.android:jwtdecode:2.0.2'
+
+    implementation 'com.microsoft.signalr:signalr:7.0.0'
 }

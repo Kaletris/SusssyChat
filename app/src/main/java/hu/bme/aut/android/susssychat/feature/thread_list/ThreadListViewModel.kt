@@ -9,8 +9,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.microsoft.signalr.HubConnection
+import com.microsoft.signalr.HubConnectionBuilder
 import hu.bme.aut.android.susssychat.ChatApplication
+import hu.bme.aut.android.susssychat.feature.cerificate.HttpsTrustManager
 import hu.bme.aut.android.susssychat.usecases.ChatUseCases
+import io.reactivex.rxjava3.core.Single
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSession
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 class ThreadListViewModel(
     private val threadOperations: ChatUseCases,
@@ -21,7 +31,59 @@ class ThreadListViewModel(
     val state = _state.asStateFlow()
 
     init {
+        //HttpsTrustManager.allowAllSSL()
+
+        val hubConnection: HubConnection = HubConnectionBuilder.create("https://10.0.2.2:7069/notifications")
+            .setHttpClientBuilderCallback {
+                val x509TrustManager: X509TrustManager = object : X509TrustManager {
+                    override fun checkClientTrusted(
+                        chain: Array<X509Certificate?>?,
+                        authType: String?
+                    ) {
+                    }
+
+                    override fun checkServerTrusted(
+                        chain: Array<X509Certificate?>?,
+                        authType: String?
+                    ) {
+                    }
+
+                    override fun getAcceptedIssuers() = arrayOf<X509Certificate?>()
+                }
+                val trustAllCerts: Array<TrustManager> = arrayOf(
+                    x509TrustManager
+                )
+
+                val sslContext: SSLContext = SSLContext.getInstance("SSL")
+                sslContext.init(null, trustAllCerts, SecureRandom())
+
+                it.sslSocketFactory(sslContext.getSocketFactory(), x509TrustManager)
+                .hostnameVerifier { hostname: String?, session: SSLSession? -> true }
+            }
+
+
+            //.withAccessTokenProvider(Single.just(getToken()))
+            .build()
+
+        hubConnection.on(
+            "ThreadCreated"
+        ) {
+            loadThreadList()
+        }
+
+        hubConnection.on(
+            "ThreadDeleted"
+        ) {
+            loadThreadList()
+        }
+
+        viewModelScope.launch (Dispatchers.IO) {
+            hubConnection.start().blockingAwait()
+        }
+
+
         loadThreadList()
+
     }
 
     fun getToken(): String {
@@ -43,7 +105,9 @@ class ThreadListViewModel(
                 }
                 loadThreadList()
             }
-
+            is ThreadListEvent.ReloadThreadList -> {
+                loadThreadList()
+            }
         }
     }
 

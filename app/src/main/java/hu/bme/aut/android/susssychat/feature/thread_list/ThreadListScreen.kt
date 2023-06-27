@@ -26,12 +26,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.microsoft.signalr.HubConnection
+import com.microsoft.signalr.HubConnectionBuilder
 import hu.bme.aut.android.susssychat.ChatApplication
 import hu.bme.aut.android.susssychat.R
 import hu.bme.aut.android.susssychat.feature.thread_list.ThreadListEvent.CreateThread
 import hu.bme.aut.android.susssychat.ui.common.ThreadListAppBar
 import hu.bme.aut.android.susssychat.ui.model.toUiText
 import hu.bme.aut.android.susssychat.usecases.ChatUseCases
+import io.reactivex.rxjava3.core.Single
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @ExperimentalMaterial3Api
